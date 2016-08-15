@@ -1,89 +1,259 @@
-<!doctype html>
-<html class="no-js" lang="">
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-        <title></title>
-        <meta name="description" content="">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-
-        <link rel="stylesheet" href="css/bootstrap.min.css">
-        <style>
-            body {
-                padding-top: 50px;
-                padding-bottom: 20px;
-            }
-        </style>
-        <link rel="stylesheet" href="css/bootstrap-theme.min.css">
-        <link rel="stylesheet" href="css/main.css">
-
-        <script src="js/vendor/modernizr-2.8.3.min.js"></script>
-    </head>
-    <body>
-    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-      <div class="container">
+<!DOCTYPE html>
+<html ng-app="SmartFarmUIApp">
+<head>
+    <title>Smart Farm</title>
+    <script src="https://code.jquery.com/jquery-2.2.3.min.js"></script>
+    <script src="http://d3js.org/d3.v3.min.js"></script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular.min.js"></script>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
+    <link href="assets/font-awesome-4.6.1/css/font-awesome.min.css" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/x2js/1.2.0/xml2json.min.js"></script>
+    <script type="text/javascript" src="config/query_config.js"></script>
+    <script type="text/javascript" src="config/url_config.js"></script>
+    <script type="text/javascript" src="controllers/mainController.js"></script>
+    <script type="text/javascript" src="services/queryService.js"></script>
+</head>
+<body>
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container-fluid">
         <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand" href="#">TQL based Smart-Farm PoC</a>
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+                    aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">Smart Farm Application to View Farm Updates</a>
         </div>
-        <div id="navbar" class="navbar-collapse collapse">
-          <form class="navbar-form navbar-right" role="form">
-            <div class="form-group">
-              <input type="text" placeholder="Email" class="form-control">
-            </div>
-            <div class="form-group">
-              <input type="password" placeholder="Password" class="form-control">
-            </div>
-            <button type="submit" class="btn btn-success">Sign in</button>
-          </form>
-        </div><!--/.navbar-collapse -->
-      </div>
-    </nav>
+    </div>
+</nav>
 
-    <!-- Main jumbotron for a primary marketing message or call to action -->
-    <div class="jumbotron">
-      <div class="container">
+<!-- Main jumbotron for a primary marketing message or call to action -->
+<div class="jumbotron">
+    <div class="container">
         <h1>Farm Health</h1>
-        <p>Render the D3 charts from the data sink.</p>
-        <p><a class="btn btn-primary btn-lg" href="#" role="button">Learn more &raquo;</a></p>
-      </div>
+        <p>Charts are rendered from the data sink.</p>
+    </div>
+    <div class="row">
+        <div class="col-md-5" id="area1"></div>
+        <div class="col-md-5" id="area2"></div>
+    </div>
+</div>
+
+<div ng-controller="mainController">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading text-center main">
+                        <i class="fa fa-server"></i> Query Results
+                    </div>
+                    <!-- /.panel-heading -->
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <ul class="list-inline text-center">
+                                    <li><h3>{{mcu.SmartFarmName}}</h3></li>
+                                </ul>
+
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-6">
+                                <ul class="list-group">
+                                    <li class="list-group-item list-group-item-info"><b><i class="fa fa-bug"></i>
+                                        External Conditions</b></li>
+                                    <li class="list-group-item ">Temperature:
+						{{mcu.ExternalEnv.Temperature}} &deg;C
+                                    </li>
+                                    <li class="list-group-item list-group-item-danger">Humidity:
+                                        {{mcu.ExternalEnv.Humidity}} %
+                                        <span class="pull-right text-muted small"><em>{{mcu.ExternalEnv.Time| date : 'short'}}</em>
+                                        </span>
+                                    </li>
+                                    <li class="list-group-item ">Sunlight: {{mcu.ExternalEnv.Light}}
+                                        lux
+                                    </li>
+                                    <li class="list-group-item ">Soil Moisture:
+                                        {{mcu.ExternalEnv.SoilMoisture}} cb
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="col-xs-12 col-sm-6">
+                                <ul class="list-group">
+                                    <li class="list-group-item list-group-item-info"><b><i class="fa fa-bug"></i>
+                                        Internal Status</b></li>
+                                    <li class="list-group-item ">Temperature:
+                                        {{mcu.IntTemp}} &deg;C
+                                    </li>
+                                    <li class="list-group-item ">Humidity: {{mcu.IntHum}}
+                                        %
+                                    </li>
+                                    <li class="list-group-item ">Amb. Light: {{mcu.IntAmb}}
+                                        lux
+                                    </li>
+                                    <li class="list-group-item ">Soil Moisture:
+                                        {{mcu.IntSoil}} cb
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+			<div class="row text-center">
+			  <button ng-click="initEquipment()">Initialize Equipment</button>
+			  <button ng-click="initSubscription()">Initalize Subscription</button>
+			</div>
+			<div class="row text-center">
+                                   <h1> </h1>
+			</div>
+			<div class="row text-center">
+			  <p>Threshold: <input type="text" ng-model="threshold"/> </p>
+			  <button ng-click="updateThreshold()">Update Threshold</button>
+			</div>
+			<!-- /.list-group -->
+                    </div>
+                    <!-- /.panel-body -->
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div class="container">
-      <!-- Example row of columns -->
-      <div class="row">
+</div>
+<div class="container">
+    <!-- Example row of columns -->
+    <div class="row">
         <div class="col-md-4">
-          <h2>Buffer</h2>
-          <p>buffer</p>
-          <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
+            <div class="panel-heading text-center main">
+                <e"class="fa fa-file"></i> Logs
+            </div>
+            <!-- /.panel-heading -->
+            <div class="panel-body">
+                <!-- /.list-group -->
+                <textarea name="" id="fdkf" cols="30" rows="10" class="form-control" ng-model="$root.logs"></textarea>
+            </div>
+            <!-- /.panel-body -->
         </div>
         <div class="col-md-4">
-          <h2>Market Trends</h2>
-          <p>Aggregated Data Analytics</p>
-          <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
-       </div>
-        <div class="col-md-4">
-          <h2>Related news</h2>
-          <p>Public data available to be displayed</p>
-          <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
+            <h2>Market Trends</h2>
+            <p>Aggregated Data Analytics</p>
+            <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
         </div>
-      </div>
+        <div class="col-md-4">
+            <h2>Related news</h2>
+            <p>Public data available to be displayed</p>
+            <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
+        </div>
+    </div>
+    <hr>
 
-      <hr>
+    <footer>
+        <p>&copy; Team 2016</p>
+    </footer>
+</div> <!-- /container -->
 
-      <footer>
-        <p>&copy; Company 2015</p>
-      </footer>
-    </div> <!-- /container -->        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-        <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.11.2.min.js"><\/script>')</script>
+<script>
 
-        <script src="js/vendor/bootstrap.min.js"></script>
+    // Set the dimensions of the canvas / graph
+    var	margin = {top: 30, right: 20, bottom: 30, left: 50},
+            width = 400 - margin.left - margin.right,
+            height = 220 - margin.top - margin.bottom;
 
-        <script src="js/main.js"></script>
-    </body>
+    // Parse the date / time
+    var	parseDate = d3.time.format("%d-%b-%y").parse;
+
+    // Set the ranges
+    var	x = d3.time.scale().range([0, width]);
+    var	y = d3.scale.linear().range([height, 0]);
+
+    // Define the axes
+    var	xAxis = d3.svg.axis().scale(x)
+            .orient("bottom").ticks(5);
+
+    var	yAxis = d3.svg.axis().scale(y)
+            .orient("left").ticks(5);
+
+    // Define the line
+    var	valueline = d3.svg.line()
+            .x(function(d) { return x(d.date); })
+            .y(function(d) { return y(d.close); });
+
+    // Adds the svg canvas
+    var	chart1 = d3.select("#area1")
+            .append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    // Get the data
+    d3.csv("data-1.csv", function(error, data) {
+        data.forEach(function(d) {
+            d.date = parseDate(d.date);
+            d.close = +d.close;
+        });
+
+        // Scale the range of the data
+        x.domain(d3.extent(data, function(d) { return d.date; }));
+        y.domain([0, d3.max(data, function(d) { return d.close; })]);
+
+        // Add the valueline path.
+        chart1.append("path")
+                .attr("class", "line")
+                .attr("d", valueline(data));
+
+        // Add the X Axis
+        chart1.append("g")
+                .attr("class", "x axis")
+                .attr("transform", "translate(0," + height + ")")
+                .call(xAxis);
+
+        // Add the Y Axis
+        chart1.append("g")
+                .attr("class", "y axis")
+                .call(yAxis);
+
+    });
+
+    // Adds the svg canvas
+    var	chart2 = d3.select("#area2")
+            .append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    // Get the data
+    d3.csv("data-2.csv", function(error, data) {
+        data.forEach(function(d) {
+            d.date = parseDate(d.date);
+            d.close = +d.close;
+        });
+
+        // Scale the range of the data
+        x.domain(d3.extent(data, function(d) { return d.date; }));
+        y.domain([0, d3.max(data, function(d) { return d.close; })]);
+
+        // Add the valueline path.
+        chart2.append("path")
+                .attr("class", "line")
+                .attr("d", valueline(data));
+
+        // Add the X Axis
+        chart2.append("g")
+                .attr("class", "x axis")
+                .attr("transform", "translate(0," + height + ")")
+                .call(xAxis);
+
+        // Add the Y Axis
+        chart2.append("g")
+                .attr("class", "y axis")
+                .call(yAxis);
+
+    });
+
+
+</script>
+</body>
 </html>

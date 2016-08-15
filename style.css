@@ -1,0 +1,39 @@
+body{
+	background: #f8f8f8;
+	background-size: cover;
+	padding: 0; margin: 0;
+	padding-top: 60px;
+}
+.header{
+	background: #000; color: #fff; margin-bottom: 20px;
+}
+.greenhouseDetails{
+	background: #39404a;
+	color: #fff;
+}
+.statusBlock{
+	background: #39404a;
+	color: #fff;
+	padding: 30px; margin: 30px 0;	
+}
+.footer {
+	position: absolute;
+	bottom: 0;
+	width: 100%;
+	/* Set the fixed height of the footer here */
+	height: 30px;
+	background-color: #39404a;
+	color: white;
+	font-size: 16px;
+	padding: 5px;
+}
+
+.panel-heading.main{
+	background: #39404a;
+	color: white;
+}
+
+.navbar{
+	background: #39404a;
+	color: white;
+}
